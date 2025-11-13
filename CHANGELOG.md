@@ -53,6 +53,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Optional linking to parts for inventory tracking
   - Project-based PO filtering
 
+**Week 3: Labor & Time Tracking (IN PROGRESS)** - 2025-11-13
+- **Labor Rate System:**
+  - LaborRate entity with type and role classification
+  - Support for multiple rate types (standard, premium, specialty, weekend, emergency)
+  - Labor role categorization (mechanic, body_work, paint, fabrication, electrical, tuning)
+  - Date-effective rates with expiration support
+  - DTOs for labor rate management
+
+- **Time Tracking System:**
+  - TimeEntry entity for logging work hours
+  - Support for both timer-based and manual time entry
+  - Linking to tasks and labor items
+  - Automatic cost calculation based on hours and rate
+  - Billable/non-billable flagging and approval workflow
+  - User attribution for all time entries
+  - DTOs for time entry management
+
 ### Changed
 - Updated analytics service with Phase 3 advanced methods
 - Added comprehensive analytics documentation
