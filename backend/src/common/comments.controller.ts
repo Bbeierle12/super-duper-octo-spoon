@@ -12,8 +12,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { CommentsService, CreateCommentDto, UpdateCommentDto } from './comments.service';
-import { CurrentTenant } from './decorators/tenant.decorator';
-import { CurrentUser } from './decorators/user.decorator';
+import { CurrentTenant, CurrentUser } from './decorators/tenant.decorator';
 import { TenantGuard } from './guards/tenant.guard';
 import { PermissionsGuard } from './guards/permissions.guard';
 import { RequirePermissions } from './decorators/permissions.decorator';

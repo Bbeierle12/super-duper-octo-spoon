@@ -15,6 +15,7 @@ export enum Permission {
   EDIT_PROJECT = 'edit_project',
   DELETE_PROJECT = 'delete_project',
   ARCHIVE_PROJECT = 'archive_project',
+  VIEW_PROJECTS = 'view_projects',
 
   // Categories
   MANAGE_CATEGORIES = 'manage_categories',
@@ -24,6 +25,7 @@ export enum Permission {
   EDIT_PARTS = 'edit_parts',
   DELETE_PARTS = 'delete_parts',
   EDIT_COSTS = 'edit_costs',
+  MANAGE_PARTS = 'manage_parts',
 
   // Labor
   MANAGE_LABOR = 'manage_labor',
@@ -58,7 +60,9 @@ export class PermissionsService {
       Permission.CREATE_PROJECT,
       Permission.EDIT_PROJECT,
       Permission.ARCHIVE_PROJECT,
+      Permission.VIEW_PROJECTS,
       Permission.MANAGE_CATEGORIES,
+      Permission.MANAGE_PARTS,
       Permission.ADD_PARTS,
       Permission.EDIT_PARTS,
       Permission.DELETE_PARTS,
@@ -76,7 +80,9 @@ export class PermissionsService {
       Permission.VIEW_MEMBERS,
       Permission.CREATE_PROJECT,
       Permission.EDIT_PROJECT,
+      Permission.VIEW_PROJECTS,
       Permission.MANAGE_CATEGORIES,
+      Permission.MANAGE_PARTS,
       Permission.ADD_PARTS,
       Permission.EDIT_PARTS,
       Permission.EDIT_COSTS,
@@ -89,6 +95,7 @@ export class PermissionsService {
     ],
     [UserRole.VIEWER]: [
       Permission.VIEW_MEMBERS,
+      Permission.VIEW_PROJECTS,
       Permission.VIEW_REPORTS,
       Permission.EXPORT_DATA,
     ],

@@ -26,7 +26,7 @@ import { CreateLaborRateDto } from './dto/create-labor-rate.dto';
 import { UpdateLaborRateDto } from './dto/update-labor-rate.dto';
 import { CreateTimeEntryDto } from './dto/create-time-entry.dto';
 import { UpdateTimeEntryDto } from './dto/update-time-entry.dto';
-import { CurrentUser } from '../common/decorators/user.decorator';
+import { CurrentUser } from '../common/decorators/tenant.decorator';
 
 @ApiTags('labor')
 @Controller('labor')

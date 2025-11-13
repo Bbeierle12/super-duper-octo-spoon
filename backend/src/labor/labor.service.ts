@@ -355,7 +355,7 @@ export class LaborService {
     }
 
     entry.endTime = new Date();
-    entry.hours = entry.duration;
+    entry.hours = entry.duration || 0;
 
     // Calculate total cost if rate provided
     if (entry.hourlyRate && entry.hours) {
