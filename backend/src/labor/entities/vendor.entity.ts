@@ -1,6 +1,7 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { TenantBaseEntity } from '../../common/entities/base.entity';
 import { LaborItem } from './labor-item.entity';
+import { PurchaseOrder } from './purchase-order.entity';
 
 export enum VendorType {
   SHOP = 'shop',
@@ -46,4 +47,7 @@ export class Vendor extends TenantBaseEntity {
 
   @OneToMany(() => LaborItem, (laborItem) => laborItem.vendor)
   laborItems: LaborItem[];
+
+  @OneToMany(() => PurchaseOrder, (po) => po.vendor)
+  purchaseOrders: PurchaseOrder[];
 }
