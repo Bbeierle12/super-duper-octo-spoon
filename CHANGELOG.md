@@ -78,16 +78,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - DTOs: CreateTimeEntryDto, UpdateTimeEntryDto
 
 **Week 4: Change Orders & Comments (COMPLETE)** - 2025-11-13
-- **Change Order System:**
+- **Change Order System (FULLY IMPLEMENTED):**
   - ChangeOrder and ChangeOrderItem entities
+  - ChangeOrdersService with full workflow implementation
+  - ChangeOrdersController with 9 endpoints:
+    - POST `/change-orders` - Create change order
+    - GET `/change-orders?projectId=X` - List change orders
+    - GET `/change-orders/:id` - Get details
+    - PATCH `/change-orders/:id` - Update (draft only)
+    - POST `/change-orders/:id/submit` - Submit for approval
+    - POST `/change-orders/:id/approve` - Approve (auto-adjusts budget)
+    - POST `/change-orders/:id/reject` - Reject with reason
+    - POST `/change-orders/:id/implement` - Mark as implemented
+    - DELETE `/change-orders/:id` - Delete (draft only)
   - 5-status workflow (draft, submitted, approved, rejected, implemented)
   - 4 change types (scope_addition, scope_reduction, cost_adjustment, timeline_extension)
-  - Automatic CO numbering
+  - Automatic CO numbering (CO-####)
   - Budget and schedule impact tracking
-  - Approval workflow with audit trail
-  - Multi-item change orders with line-item details
+  - Automatic budget adjustment on approval
+  - Approval audit trail (timestamps, user attribution, rejection reasons)
+  - Multi-item change orders with detailed line items
+  - ChangeOrdersModule registered in ProjectsModule
+  - DTOs: CreateChangeOrderDto, UpdateChangeOrderDto, ChangeOrderItemDto
 
-- **Comments System:**
+- **Comments System (FULLY IMPLEMENTED):**
   - Polymorphic Comment entity supporting 6 entity types
   - Entity types: PROJECT, TASK, PART, CATEGORY, LABOR_ITEM, CHANGE_ORDER
   - Threaded comments with parent-child relationships
@@ -97,6 +111,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Entity-based filtering with query parameters
   - User access control (users can only edit/delete their own comments)
   - CommentsModule registered in CommonModule for global access
+
+- **Activity Feed System (NEW - FULLY IMPLEMENTED):**
+  - ActivityFeed entity with comprehensive activity tracking
+  - 14 activity types tracked:
+    - Project lifecycle (created, updated, status_changed)
+    - Tasks (created, completed)
+    - Parts, labor, media additions
+    - Comments, change orders
+    - Members (invited, joined)
+    - Purchase orders, time entries
+  - 11 entity types supported
+  - ActivityFeedService with helper methods for common activities
+  - ActivityFeedController with 3 endpoints:
+    - GET `/activity` - Get feed with filters (type, entity, user)
+    - GET `/activity/projects/:id` - Get project activity
+    - GET `/activity/entity/:type/:id` - Get entity-specific activity
+  - Filterable by activity type, entity type, user, with configurable limits
+  - JSONB metadata field for additional context
+  - Project-level activity aggregation
+  - Entity-level activity tracking
+  - ActivityFeedService registered globally in CommonModule
 
 ### Changed
 - Updated analytics service with Phase 3 advanced methods
