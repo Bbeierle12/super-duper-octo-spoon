@@ -9,7 +9,30 @@ import {
   Tabs,
   Tab,
   Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  LinearProgress,
+  Alert,
+  Button,
 } from '@mui/material';
+import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineDot,
+  TimelineConnector,
+  TimelineContent,
+  TimelineOppositeContent,
+} from '@mui/lab';
+import {
+  CheckCircle,
+  RadioButtonUnchecked,
+  Schedule,
+} from '@mui/icons-material';
 import { projectsAPI, categoriesAPI, analyticsAPI } from '../../services/api';
 
 interface TabPanelProps {
@@ -32,6 +55,7 @@ export default function ProjectDetail() {
   const [project, setProject] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [breakdown, setBreakdown] = useState<any[]>([]);
+  const [parts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [tabValue, setTabValue] = useState(0);
 
@@ -177,11 +201,193 @@ export default function ProjectDetail() {
         </TabPanel>
 
         <TabPanel value={tabValue} index={2}>
-          <Typography>Parts list coming soon...</Typography>
+          <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between' }}>
+            <Typography variant="h6">Parts Inventory</Typography>
+            <Button variant="contained" size="small">
+              Add Part
+            </Button>
+          </Box>
+
+          {parts.length === 0 ? (
+            <Alert severity="info">
+              No parts added yet. Start by adding parts to track your inventory.
+            </Alert>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Part Name</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell>Vendor</TableCell>
+                    <TableCell align="right">Quantity</TableCell>
+                    <TableCell align="right">Unit Cost</TableCell>
+                    <TableCell align="right">Total</TableCell>
+                    <TableCell>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {/* Mock data for demonstration */}
+                  {[
+                    {
+                      name: 'Turbo Kit',
+                      category: 'Engine',
+                      vendor: 'Speed Shop',
+                      quantity: 1,
+                      unitCost: 3500,
+                      status: 'Ordered'
+                    },
+                    {
+                      name: 'Coilover Suspension',
+                      category: 'Suspension',
+                      vendor: 'Race Parts Inc',
+                      quantity: 1,
+                      unitCost: 1800,
+                      status: 'Delivered'
+                    },
+                    {
+                      name: 'Brake Rotors',
+                      category: 'Brakes',
+                      vendor: 'Performance Plus',
+                      quantity: 4,
+                      unitCost: 250,
+                      status: 'Installed'
+                    }
+                  ].map((part, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{part.name}</TableCell>
+                      <TableCell>{part.category}</TableCell>
+                      <TableCell>{part.vendor}</TableCell>
+                      <TableCell align="right">{part.quantity}</TableCell>
+                      <TableCell align="right">${part.unitCost.toLocaleString()}</TableCell>
+                      <TableCell align="right">
+                        ${(part.quantity * part.unitCost).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={part.status}
+                          size="small"
+                          color={
+                            part.status === 'Installed' ? 'success' :
+                            part.status === 'Delivered' ? 'primary' :
+                            'default'
+                          }
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </TabPanel>
 
         <TabPanel value={tabValue} index={3}>
-          <Typography>Timeline view coming soon...</Typography>
+          <Typography variant="h6" gutterBottom>
+            Project Timeline
+          </Typography>
+
+          <Box sx={{ mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography variant="subtitle2" sx={{ minWidth: 120 }}>
+                Progress
+              </Typography>
+              <Box sx={{ flexGrow: 1, mr: 2 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={65}
+                  sx={{ height: 10, borderRadius: 5 }}
+                />
+              </Box>
+              <Typography variant="body2">65%</Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              Project started: {project.startDate ? new Date(project.startDate).toLocaleDateString() : 'Not set'}
+              {' • '}
+              Target completion: {project.targetCompletionDate ? new Date(project.targetCompletionDate).toLocaleDateString() : 'Not set'}
+            </Typography>
+          </Box>
+
+          <Timeline position="alternate">
+            <TimelineItem>
+              <TimelineOppositeContent color="text.secondary">
+                {new Date(project.startDate || Date.now()).toLocaleDateString()}
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot color="success">
+                  <CheckCircle />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="h6">Project Started</Typography>
+                <Typography variant="body2">Initial planning and design phase</Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineOppositeContent color="text.secondary">
+                Week 2-4
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot color="success">
+                  <CheckCircle />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="h6">Disassembly</Typography>
+                <Typography variant="body2">Complete teardown and inspection</Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineOppositeContent color="text.secondary">
+                Week 5-8
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot color="primary">
+                  <Schedule />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="h6">Engine Build</Typography>
+                <Typography variant="body2">Engine rebuild and performance upgrades</Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineOppositeContent color="text.secondary">
+                Week 9-12
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot>
+                  <RadioButtonUnchecked />
+                </TimelineDot>
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="h6">Body & Paint</Typography>
+                <Typography variant="body2">Bodywork and custom paint job</Typography>
+              </TimelineContent>
+            </TimelineItem>
+
+            <TimelineItem>
+              <TimelineOppositeContent color="text.secondary">
+                {project.targetCompletionDate ? new Date(project.targetCompletionDate).toLocaleDateString() : 'TBD'}
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot>
+                  <RadioButtonUnchecked />
+                </TimelineDot>
+              </TimelineSeparator>
+              <TimelineContent>
+                <Typography variant="h6">Final Assembly</Typography>
+                <Typography variant="body2">Complete assembly and testing</Typography>
+              </TimelineContent>
+            </TimelineItem>
+          </Timeline>
         </TabPanel>
       </Paper>
     </Box>
