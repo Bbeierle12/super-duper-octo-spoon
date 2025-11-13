@@ -13,14 +13,19 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  Avatar,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
   DirectionsCar as ProjectsIcon,
+  Assignment as TasksIcon,
+  Build as PartsIcon,
+  PhotoLibrary as MediaIcon,
+  Settings as SettingsIcon,
   Logout as LogoutIcon,
 } from '@mui/icons-material';
-import { useAppDispatch } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { logout } from '../../store/slices/authSlice';
 
 const DRAWER_WIDTH = 240;
@@ -29,6 +34,7 @@ export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -42,6 +48,10 @@ export default function Layout() {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Projects', icon: <ProjectsIcon />, path: '/projects' },
+    { text: 'Tasks', icon: <TasksIcon />, path: '/tasks' },
+    { text: 'Parts', icon: <PartsIcon />, path: '/parts' },
+    { text: 'Media', icon: <MediaIcon />, path: '/media' },
+    { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
   ];
 
   const drawer = (
@@ -91,9 +101,19 @@ export default function Layout() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             DreamBuildDrive 2.0
           </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
+                {user?.firstName?.[0]}{user?.lastName?.[0]}
+              </Avatar>
+              <Typography variant="body2" sx={{ display: { xs: 'none', md: 'block' } }}>
+                {user?.firstName} {user?.lastName}
+              </Typography>
+            </Box>
+          </Box>
         </Toolbar>
       </AppBar>
 

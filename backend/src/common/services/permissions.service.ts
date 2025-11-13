@@ -16,6 +16,7 @@ export enum Permission {
   DELETE_PROJECT = 'delete_project',
   ARCHIVE_PROJECT = 'archive_project',
   VIEW_PROJECTS = 'view_projects',
+  MANAGE_PROJECTS = 'manage_projects',
 
   // Categories
   MANAGE_CATEGORIES = 'manage_categories',
@@ -61,6 +62,7 @@ export class PermissionsService {
       Permission.EDIT_PROJECT,
       Permission.ARCHIVE_PROJECT,
       Permission.VIEW_PROJECTS,
+      Permission.MANAGE_PROJECTS,
       Permission.MANAGE_CATEGORIES,
       Permission.MANAGE_PARTS,
       Permission.ADD_PARTS,
@@ -81,6 +83,7 @@ export class PermissionsService {
       Permission.CREATE_PROJECT,
       Permission.EDIT_PROJECT,
       Permission.VIEW_PROJECTS,
+      Permission.MANAGE_PROJECTS,
       Permission.MANAGE_CATEGORIES,
       Permission.MANAGE_PARTS,
       Permission.ADD_PARTS,

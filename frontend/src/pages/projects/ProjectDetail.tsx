@@ -125,7 +125,7 @@ export default function ProjectDetail() {
       </Grid>
 
       <Paper>
-        <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
+        <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
           <Tab label="Overview" />
           <Tab label="Categories" />
           <Tab label="Parts" />

@@ -10,11 +10,12 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ChangeOrderType } from '../entities/change-order.entity';
+import { ChangeOrderItemType } from '../entities/change-order-item.entity';
 
 export class ChangeOrderItemDto {
-  @ApiProperty({ example: 'part' })
-  @IsEnum(['part', 'labor', 'other'])
-  itemType: 'part' | 'labor' | 'other';
+  @ApiProperty({ example: 'part', enum: ChangeOrderItemType })
+  @IsEnum(ChangeOrderItemType)
+  itemType: ChangeOrderItemType;
 
   @ApiProperty({ example: 'Additional turbo upgrade' })
   @IsString()
