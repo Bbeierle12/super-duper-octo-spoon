@@ -8,6 +8,7 @@ export enum Permission {
   MANAGE_BILLING = 'manage_billing',
   INVITE_USERS = 'invite_users',
   MANAGE_MEMBERS = 'manage_members',
+  VIEW_MEMBERS = 'view_members',
 
   // Project management
   CREATE_PROJECT = 'create_project',
@@ -53,6 +54,7 @@ export class PermissionsService {
       Permission.VIEW_BILLING,
       Permission.INVITE_USERS,
       Permission.MANAGE_MEMBERS,
+      Permission.VIEW_MEMBERS,
       Permission.CREATE_PROJECT,
       Permission.EDIT_PROJECT,
       Permission.ARCHIVE_PROJECT,
@@ -71,6 +73,7 @@ export class PermissionsService {
       Permission.EXPORT_DATA,
     ],
     [UserRole.MEMBER]: [
+      Permission.VIEW_MEMBERS,
       Permission.CREATE_PROJECT,
       Permission.EDIT_PROJECT,
       Permission.MANAGE_CATEGORIES,
@@ -85,6 +88,7 @@ export class PermissionsService {
       Permission.EXPORT_DATA,
     ],
     [UserRole.VIEWER]: [
+      Permission.VIEW_MEMBERS,
       Permission.VIEW_REPORTS,
       Permission.EXPORT_DATA,
     ],

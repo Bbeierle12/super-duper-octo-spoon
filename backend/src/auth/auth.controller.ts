@@ -4,6 +4,8 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -26,7 +28,21 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current user profile' })
-  async getProfile(@Request() req) {
+  async getProfile(@Request() req: any) {
     return req.user;
+  }
+
+  @Post('password-reset/request')
+  @ApiOperation({ summary: 'Request a password reset email' })
+  async requestPasswordReset(@Body() dto: RequestPasswordResetDto) {
+    await this.authService.requestPasswordReset(dto.email);
+    return { message: 'If the email exists, a password reset link has been sent' };
+  }
+
+  @Post('password-reset/reset')
+  @ApiOperation({ summary: 'Reset password with token' })
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.authService.resetPassword(dto.token, dto.newPassword);
+    return { message: 'Password has been reset successfully' };
   }
 }

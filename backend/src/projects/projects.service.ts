@@ -26,7 +26,7 @@ export class ProjectsService {
     tenantId: string,
     paginationDto: PaginationDto,
   ): Promise<PaginatedResponseDto<Project>> {
-    const { page, limit } = paginationDto;
+    const { page = 1, limit = 10 } = paginationDto;
     const skip = (page - 1) * limit;
 
     const [projects, total] = await this.projectsRepository.findAndCount({

@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TenantService } from './services/tenant.service';
 import { ActivityLogService } from './services/activity-log.service';
 import { PermissionsService } from './services/permissions.service';
+import { EmailService } from './services/email.service';
 import { HealthController } from './health.controller';
 import { ActivityLog } from './entities/activity-log.entity';
 
@@ -10,7 +11,7 @@ import { ActivityLog } from './entities/activity-log.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([ActivityLog])],
   controllers: [HealthController],
-  providers: [TenantService, ActivityLogService, PermissionsService],
-  exports: [TenantService, ActivityLogService, PermissionsService],
+  providers: [TenantService, ActivityLogService, PermissionsService, EmailService],
+  exports: [TenantService, ActivityLogService, PermissionsService, EmailService],
 })
 export class CommonModule {}

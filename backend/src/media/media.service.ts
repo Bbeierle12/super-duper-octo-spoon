@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { MediaAsset } from './entities/media-asset.entity';
+import { MediaAsset, MediaType } from './entities/media-asset.entity';
 import { RequestUploadDto, CompleteUploadDto } from './dto/request-upload.dto';
 import * as crypto from 'crypto';
 
@@ -71,7 +71,7 @@ export class MediaService {
       url: this.generateAccessUrl(dto.storageKey),
       description: dto.description,
       tags: dto.tags,
-      type: 'image', // Would be determined from actual upload
+      type: MediaType.IMAGE, // Would be determined from actual upload
     });
 
     return this.mediaRepository.save(mediaAsset);

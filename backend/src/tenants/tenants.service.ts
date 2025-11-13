@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tenant, TenantPlan } from './entities/tenant.entity';
@@ -31,6 +31,10 @@ export class TenantsService {
 
   async update(id: string, updates: Partial<Tenant>): Promise<Tenant> {
     await this.tenantsRepository.update(id, updates);
-    return this.findOne(id);
+    const tenant = await this.findOne(id);
+    if (!tenant) {
+      throw new NotFoundException('Tenant not found');
+    }
+    return tenant;
   }
 }
