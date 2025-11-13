@@ -22,6 +22,11 @@ import { UpdateVendorDto } from './dto/update-vendor.dto';
 import { CreatePurchaseOrderDto } from './dto/create-purchase-order.dto';
 import { UpdatePurchaseOrderDto } from './dto/update-purchase-order.dto';
 import { PurchaseOrderStatus } from './entities/purchase-order.entity';
+import { CreateLaborRateDto } from './dto/create-labor-rate.dto';
+import { UpdateLaborRateDto } from './dto/update-labor-rate.dto';
+import { CreateTimeEntryDto } from './dto/create-time-entry.dto';
+import { UpdateTimeEntryDto } from './dto/update-time-entry.dto';
+import { CurrentUser } from '../common/decorators/user.decorator';
 
 @ApiTags('labor')
 @Controller('labor')
@@ -140,5 +145,153 @@ export class LaborController {
     @Body('status') status: PurchaseOrderStatus,
   ) {
     return this.laborService.updatePurchaseOrderStatus(tenantId, poId, status);
+  }
+
+  // ========== Labor Rates ==========
+
+  @Post('labor-rates')
+  @ApiOperation({ summary: 'Create a new labor rate' })
+  @RequirePermissions(Permission.MANAGE_PARTS)
+  createLaborRate(@CurrentTenant() tenantId: string, @Body() dto: CreateLaborRateDto) {
+    return this.laborService.createLaborRate(tenantId, dto);
+  }
+
+  @Get('labor-rates')
+  @ApiOperation({ summary: 'Get all labor rates' })
+  @ApiQuery({ name: 'activeOnly', required: false, type: Boolean })
+  @RequirePermissions(Permission.VIEW_PROJECTS)
+  findAllLaborRates(
+    @CurrentTenant() tenantId: string,
+    @Query('activeOnly') activeOnly?: string,
+  ) {
+    if (activeOnly === 'true') {
+      return this.laborService.findActiveLaborRates(tenantId);
+    }
+    return this.laborService.findAllLaborRates(tenantId);
+  }
+
+  @Get('labor-rates/:rateId')
+  @ApiOperation({ summary: 'Get labor rate details' })
+  @RequirePermissions(Permission.VIEW_PROJECTS)
+  findOneLaborRate(
+    @CurrentTenant() tenantId: string,
+    @Param('rateId') rateId: string,
+  ) {
+    return this.laborService.findOneLaborRate(tenantId, rateId);
+  }
+
+  @Patch('labor-rates/:rateId')
+  @ApiOperation({ summary: 'Update labor rate' })
+  @RequirePermissions(Permission.MANAGE_PARTS)
+  updateLaborRate(
+    @CurrentTenant() tenantId: string,
+    @Param('rateId') rateId: string,
+    @Body() dto: UpdateLaborRateDto,
+  ) {
+    return this.laborService.updateLaborRate(tenantId, rateId, dto);
+  }
+
+  @Delete('labor-rates/:rateId')
+  @ApiOperation({ summary: 'Delete labor rate' })
+  @RequirePermissions(Permission.MANAGE_PARTS)
+  async deleteLaborRate(
+    @CurrentTenant() tenantId: string,
+    @Param('rateId') rateId: string,
+  ) {
+    await this.laborService.deleteLaborRate(tenantId, rateId);
+    return { message: 'Labor rate deleted successfully' };
+  }
+
+  // ========== Time Tracking ==========
+
+  @Post('time-entries')
+  @ApiOperation({ summary: 'Create a new time entry' })
+  @RequirePermissions(Permission.MANAGE_TASKS)
+  createTimeEntry(
+    @CurrentTenant() tenantId: string,
+    @CurrentUser() user: any,
+    @Body() dto: CreateTimeEntryDto,
+  ) {
+    return this.laborService.createTimeEntry(tenantId, user.id, dto);
+  }
+
+  @Get('time-entries')
+  @ApiOperation({ summary: 'Get time entries' })
+  @ApiQuery({ name: 'taskId', required: false })
+  @ApiQuery({ name: 'laborItemId', required: false })
+  @ApiQuery({ name: 'userId', required: false })
+  @RequirePermissions(Permission.VIEW_PROJECTS)
+  findTimeEntries(
+    @CurrentTenant() tenantId: string,
+    @Query('taskId') taskId?: string,
+    @Query('laborItemId') laborItemId?: string,
+    @Query('userId') userId?: string,
+  ) {
+    return this.laborService.findTimeEntries(tenantId, { taskId, laborItemId, userId });
+  }
+
+  @Get('time-entries/:entryId')
+  @ApiOperation({ summary: 'Get time entry details' })
+  @RequirePermissions(Permission.VIEW_PROJECTS)
+  findOneTimeEntry(
+    @CurrentTenant() tenantId: string,
+    @Param('entryId') entryId: string,
+  ) {
+    return this.laborService.findOneTimeEntry(tenantId, entryId);
+  }
+
+  @Patch('time-entries/:entryId')
+  @ApiOperation({ summary: 'Update time entry' })
+  @RequirePermissions(Permission.MANAGE_TASKS)
+  updateTimeEntry(
+    @CurrentTenant() tenantId: string,
+    @CurrentUser() user: any,
+    @Param('entryId') entryId: string,
+    @Body() dto: UpdateTimeEntryDto,
+  ) {
+    return this.laborService.updateTimeEntry(tenantId, entryId, user.id, dto);
+  }
+
+  @Patch('time-entries/:entryId/stop')
+  @ApiOperation({ summary: 'Stop timer for time entry' })
+  @RequirePermissions(Permission.MANAGE_TASKS)
+  stopTimer(
+    @CurrentTenant() tenantId: string,
+    @CurrentUser() user: any,
+    @Param('entryId') entryId: string,
+  ) {
+    return this.laborService.stopTimer(tenantId, entryId, user.id);
+  }
+
+  @Delete('time-entries/:entryId')
+  @ApiOperation({ summary: 'Delete time entry' })
+  @RequirePermissions(Permission.MANAGE_TASKS)
+  async deleteTimeEntry(
+    @CurrentTenant() tenantId: string,
+    @CurrentUser() user: any,
+    @Param('entryId') entryId: string,
+  ) {
+    await this.laborService.deleteTimeEntry(tenantId, entryId, user.id);
+    return { message: 'Time entry deleted successfully' };
+  }
+
+  @Get('tasks/:taskId/time-summary')
+  @ApiOperation({ summary: 'Get time summary for a task' })
+  @RequirePermissions(Permission.VIEW_PROJECTS)
+  getTaskTimeSummary(
+    @CurrentTenant() tenantId: string,
+    @Param('taskId') taskId: string,
+  ) {
+    return this.laborService.getTaskTimeSummary(tenantId, taskId);
+  }
+
+  @Get('projects/:projectId/labor-summary')
+  @ApiOperation({ summary: 'Get labor summary for a project' })
+  @RequirePermissions(Permission.VIEW_PROJECTS)
+  getProjectLaborSummary(
+    @CurrentTenant() tenantId: string,
+    @Param('projectId') projectId: string,
+  ) {
+    return this.laborService.getProjectLaborSummary(tenantId, projectId);
   }
 }

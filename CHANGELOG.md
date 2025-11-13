@@ -53,22 +53,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Optional linking to parts for inventory tracking
   - Project-based PO filtering
 
-**Week 3: Labor & Time Tracking (IN PROGRESS)** - 2025-11-13
+**Week 3: Labor & Time Tracking (COMPLETE)** - 2025-11-13
 - **Labor Rate System:**
   - LaborRate entity with type and role classification
-  - Support for multiple rate types (standard, premium, specialty, weekend, emergency)
-  - Labor role categorization (mechanic, body_work, paint, fabrication, electrical, tuning)
+  - Support for 5 rate types (standard, premium, specialty, weekend, emergency)
+  - Support for 8 labor roles (mechanic, body_work, paint, fabrication, electrical, tuning, assembly, general)
   - Date-effective rates with expiration support
-  - DTOs for labor rate management
+  - Full CRUD endpoints: POST/GET/PATCH/DELETE `/labor/labor-rates`
+  - Active-only filtering with query parameter
+  - DTOs: CreateLaborRateDto, UpdateLaborRateDto
 
 - **Time Tracking System:**
-  - TimeEntry entity for logging work hours
-  - Support for both timer-based and manual time entry
-  - Linking to tasks and labor items
-  - Automatic cost calculation based on hours and rate
+  - TimeEntry entity for work hour logging
+  - Support for timer-based (start/stop) and manual entry
+  - Linking to tasks and labor items for cost attribution
+  - Automatic cost calculation (hours × rate)
   - Billable/non-billable flagging and approval workflow
-  - User attribution for all time entries
-  - DTOs for time entry management
+  - User attribution and access control
+  - Full CRUD endpoints: POST/GET/PATCH/DELETE `/labor/time-entries`
+  - Timer stop endpoint: PATCH `/labor/time-entries/:id/stop`
+  - Summary endpoints:
+    - GET `/labor/tasks/:id/time-summary` - Task-level time aggregation
+    - GET `/labor/projects/:id/labor-summary` - Project-level labor cost analysis
+  - DTOs: CreateTimeEntryDto, UpdateTimeEntryDto
+
+**Week 4: Change Orders & Comments (COMPLETE)** - 2025-11-13
+- **Change Order System:**
+  - ChangeOrder and ChangeOrderItem entities
+  - 5-status workflow (draft, submitted, approved, rejected, implemented)
+  - 4 change types (scope_addition, scope_reduction, cost_adjustment, timeline_extension)
+  - Automatic CO numbering
+  - Budget and schedule impact tracking
+  - Approval workflow with audit trail
+  - Multi-item change orders with line-item details
+
+- **Comments System:**
+  - Polymorphic Comment entity supporting 6 entity types
+  - Entity types: PROJECT, TASK, PART, CATEGORY, LABOR_ITEM, CHANGE_ORDER
+  - Threaded comments with parent-child relationships
+  - User @mentions with notification support
+  - Edit tracking (isEdited, editedAt timestamps)
+  - Full CRUD endpoints: POST/GET/PATCH/DELETE `/comments`
+  - Entity-based filtering with query parameters
+  - User access control (users can only edit/delete their own comments)
+  - CommentsModule registered in CommonModule for global access
 
 ### Changed
 - Updated analytics service with Phase 3 advanced methods
