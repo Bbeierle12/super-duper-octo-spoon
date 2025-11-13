@@ -71,6 +71,18 @@ export class ProjectsController {
     return this.projectsService.remove(tenantId, id);
   }
 
+  @Post(':id/archive')
+  @ApiOperation({ summary: 'Archive a project' })
+  archive(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.projectsService.archive(tenantId, id);
+  }
+
+  @Post(':id/restore')
+  @ApiOperation({ summary: 'Restore an archived project' })
+  restore(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.projectsService.restore(tenantId, id);
+  }
+
   @Get(':id/export/csv')
   @ApiOperation({ summary: 'Export project parts to CSV' })
   async exportCSV(

@@ -70,6 +70,34 @@ export class ProjectsService {
     await this.projectsRepository.softRemove(project);
   }
 
+  async archive(tenantId: string, id: string): Promise<Project> {
+    const project = await this.findOne(tenantId, id);
+
+    // Soft delete archives the project
+    await this.projectsRepository.softRemove(project);
+
+    return project;
+  }
+
+  async restore(tenantId: string, id: string): Promise<Project> {
+    const project = await this.projectsRepository.findOne({
+      where: { id, tenantId },
+      withDeleted: true, // Include soft-deleted records
+    });
+
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+
+    if (!project.deletedAt) {
+      throw new ForbiddenException('Project is not archived');
+    }
+
+    await this.projectsRepository.restore(id);
+
+    return this.findOne(tenantId, id);
+  }
+
   async getStats(tenantId: string, id: string) {
     const project = await this.findOne(tenantId, id);
 
