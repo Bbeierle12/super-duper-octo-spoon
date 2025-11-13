@@ -8,10 +8,13 @@ import {
   Delete,
   UseGuards,
   Query,
+  Res,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Response } from 'express';
 import { ProjectsService } from './projects.service';
+import { ExportService } from './services/export.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { CurrentTenant } from '../common/decorators/tenant.decorator';
@@ -23,7 +26,10 @@ import { PaginationDto } from '../common/dto/pagination.dto';
 @UseGuards(AuthGuard('jwt'), TenantGuard)
 @ApiBearerAuth()
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly projectsService: ProjectsService,
+    private readonly exportService: ExportService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new project' })
@@ -63,5 +69,26 @@ export class ProjectsController {
   @ApiOperation({ summary: 'Delete a project (soft delete)' })
   remove(@CurrentTenant() tenantId: string, @Param('id') id: string) {
     return this.projectsService.remove(tenantId, id);
+  }
+
+  @Get(':id/export/csv')
+  @ApiOperation({ summary: 'Export project parts to CSV' })
+  async exportCSV(
+    @CurrentTenant() tenantId: string,
+    @Param('id') id: string,
+    @Res() res: Response,
+  ) {
+    const csv = await this.exportService.exportProjectToCSV(tenantId, id);
+    const project = await this.projectsService.findOne(tenantId, id);
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${project.name}-export.csv"`);
+    res.send(csv);
+  }
+
+  @Get(':id/export/summary')
+  @ApiOperation({ summary: 'Export project summary as JSON' })
+  async exportSummary(@CurrentTenant() tenantId: string, @Param('id') id: string) {
+    return this.exportService.exportProjectSummary(tenantId, id);
   }
 }

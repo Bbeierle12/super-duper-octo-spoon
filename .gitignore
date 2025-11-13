@@ -45,7 +45,10 @@ Thumbs.db
 
 # Uploads (local development)
 uploads/
-media/
+/media/
+backend/uploads/
+backend/media/
+frontend/public/uploads/
 
 # Build
 *.tsbuildinfo
