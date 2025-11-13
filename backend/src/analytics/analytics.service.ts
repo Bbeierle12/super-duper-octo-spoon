@@ -76,15 +76,14 @@ export class AnalyticsService {
   async getPortfolioMetrics(tenantId: string): Promise<PortfolioMetricsDto> {
     const projects = await this.projectsRepository.find({
       where: { tenantId },
-      relations: ['categories', 'categories.parts', 'labor'],
+      relations: ['categories', 'categories.parts'],
     });
 
     const totalProjects = projects.length;
     const activeProjects = projects.filter(
       (p) =>
-        p.status === ProjectStatus.PLANNING ||
-        p.status === ProjectStatus.IN_PROGRESS ||
-        p.status === ProjectStatus.PARTS_ORDERED,
+        p.status !== ProjectStatus.COMPLETED &&
+        p.status !== ProjectStatus.ON_HOLD,
     ).length;
     const completedProjects = projects.filter((p) => p.status === ProjectStatus.COMPLETED).length;
     const archivedProjects = projects.filter((p) => p.deletedAt !== null).length;
@@ -92,10 +91,11 @@ export class AnalyticsService {
     let totalBudget = 0;
     let totalSpent = 0;
 
-    projects.forEach((project) => {
+    // Calculate total budget and spent using async method
+    for (const project of projects) {
       totalBudget += project.totalBudget || 0;
-      totalSpent += this.calculateProjectSpent(project);
-    });
+      totalSpent += await this.calculateProjectSpent(project);
+    }
 
     const totalRemaining = totalBudget - totalSpent;
 
@@ -106,8 +106,8 @@ export class AnalyticsService {
       underBudget: 0,
     };
 
-    projects.forEach((project) => {
-      const spent = this.calculateProjectSpent(project);
+    for (const project of projects) {
+      const spent = await this.calculateProjectSpent(project);
       const budget = project.totalBudget || 0;
       const variance = spent - budget;
       const variancePercent = budget > 0 ? (variance / budget) * 100 : 0;
@@ -119,7 +119,7 @@ export class AnalyticsService {
       } else {
         budgetHealth.underBudget++;
       }
-    });
+    }
 
     const portfolioCompletion = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
@@ -142,7 +142,7 @@ export class AnalyticsService {
   ): Promise<BudgetVarianceDto> {
     const project = await this.projectsRepository.findOne({
       where: { id: projectId, tenantId },
-      relations: ['categories', 'categories.parts', 'labor'],
+      relations: ['categories', 'categories.parts'],
     });
 
     if (!project) {
@@ -152,16 +152,22 @@ export class AnalyticsService {
     const plannedBudget = project.totalBudget || 0;
 
     const partsCost =
-      project.categories?.reduce((sum, category) => {
+      project.categories?.reduce((sum: number, category) => {
         const categoryPartsCost =
-          category.parts?.reduce((partSum, part) => {
+          category.parts?.reduce((partSum: number, part) => {
             return partSum + (part.actualPrice || part.listPrice || 0) * (part.quantity || 1);
           }, 0) || 0;
         return sum + categoryPartsCost;
       }, 0) || 0;
 
-    const laborCost =
-      project.labor?.reduce((sum, labor) => sum + (labor.cost || 0), 0) || 0;
+    // Query labor items separately since project.labor relation doesn't exist
+    const laborItems = await this.laborRepository.find({
+      where: { projectId, tenantId },
+    });
+    const laborCost = laborItems.reduce(
+      (sum: number, labor) => sum + (labor.actualCost || labor.estimatedCost || 0),
+      0,
+    );
 
     const actualSpent = partsCost + laborCost;
     const remaining = plannedBudget - actualSpent;
@@ -179,9 +185,9 @@ export class AnalyticsService {
 
     const categoryBreakdown: CategoryVarianceDto[] =
       project.categories?.map((category) => {
-        const categoryPlanned = category.budgetAllocation || 0;
+        const categoryPlanned = category.budgetAllocated || 0;
         const categoryActual =
-          category.parts?.reduce((sum, part) => {
+          category.parts?.reduce((sum: number, part) => {
             return sum + (part.actualPrice || part.listPrice || 0) * (part.quantity || 1);
           }, 0) || 0;
 
@@ -241,7 +247,9 @@ export class AnalyticsService {
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter((t) => t.status === TaskStatus.COMPLETED).length;
     const inProgressTasks = tasks.filter((t) => t.status === TaskStatus.IN_PROGRESS).length;
-    const notStartedTasks = tasks.filter((t) => t.status === TaskStatus.NOT_STARTED).length;
+    const notStartedTasks = tasks.filter(
+      (t) => t.status === TaskStatus.BACKLOG || t.status === TaskStatus.TODO,
+    ).length;
     const overdueTasks = tasks.filter((t) => {
       if (t.status === TaskStatus.COMPLETED) return false;
       if (!t.dueDate) return false;
@@ -302,7 +310,7 @@ export class AnalyticsService {
   ): Promise<SpendingTrendDataDto[]> {
     const projects = await this.projectsRepository.find({
       where: { tenantId },
-      relations: ['categories', 'categories.parts', 'labor'],
+      relations: ['categories', 'categories.parts'],
     });
 
     const trendMap = new Map<string, SpendingTrendDataDto>();
@@ -320,6 +328,20 @@ export class AnalyticsService {
       });
     }
 
+    // Get all labor items for this tenant to calculate costs by project
+    const allLaborItems = await this.laborRepository.find({
+      where: { tenantId },
+    });
+
+    // Group labor items by project
+    const laborByProject = new Map<string, LaborItem[]>();
+    allLaborItems.forEach((labor) => {
+      if (!laborByProject.has(labor.projectId)) {
+        laborByProject.set(labor.projectId, []);
+      }
+      laborByProject.get(labor.projectId)!.push(labor);
+    });
+
     projects.forEach((project) => {
       if (!project.createdAt) return;
 
@@ -330,16 +352,19 @@ export class AnalyticsService {
         const trend = trendMap.get(period)!;
 
         const partsCost =
-          project.categories?.reduce((sum, category) => {
+          project.categories?.reduce((sum: number, category) => {
             const categoryPartsCost =
-              category.parts?.reduce((partSum, part) => {
+              category.parts?.reduce((partSum: number, part) => {
                 return partSum + (part.actualPrice || part.listPrice || 0) * (part.quantity || 1);
               }, 0) || 0;
             return sum + categoryPartsCost;
           }, 0) || 0;
 
-        const laborCost =
-          project.labor?.reduce((sum, labor) => sum + (labor.cost || 0), 0) || 0;
+        const projectLabor = laborByProject.get(project.id) || [];
+        const laborCost = projectLabor.reduce(
+          (sum: number, labor) => sum + (labor.actualCost || labor.estimatedCost || 0),
+          0,
+        );
 
         trend.partsCost += partsCost;
         trend.laborCost += laborCost;
@@ -351,18 +376,24 @@ export class AnalyticsService {
     return Array.from(trendMap.values());
   }
 
-  private calculateProjectSpent(project: Project): number {
+  private async calculateProjectSpent(project: Project): Promise<number> {
     const partsCost =
-      project.categories?.reduce((sum, category) => {
+      project.categories?.reduce((sum: number, category) => {
         const categoryPartsCost =
-          category.parts?.reduce((partSum, part) => {
+          category.parts?.reduce((partSum: number, part) => {
             return partSum + (part.actualPrice || part.listPrice || 0) * (part.quantity || 1);
           }, 0) || 0;
         return sum + categoryPartsCost;
       }, 0) || 0;
 
-    const laborCost =
-      project.labor?.reduce((sum, labor) => sum + (labor.cost || 0), 0) || 0;
+    // Query labor items separately since project.labor relation doesn't exist
+    const laborItems = await this.laborRepository.find({
+      where: { projectId: project.id, tenantId: project.tenantId },
+    });
+    const laborCost = laborItems.reduce(
+      (sum: number, labor) => sum + (labor.actualCost || labor.estimatedCost || 0),
+      0,
+    );
 
     return partsCost + laborCost;
   }
