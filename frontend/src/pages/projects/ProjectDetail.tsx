@@ -34,6 +34,7 @@ import {
   Schedule,
 } from '@mui/icons-material';
 import { projectsAPI, categoriesAPI, analyticsAPI } from '../../services/api';
+import TaskList from '../../components/tasks/TaskList';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -153,6 +154,7 @@ export default function ProjectDetail() {
           <Tab label="Overview" />
           <Tab label="Categories" />
           <Tab label="Parts" />
+          <Tab label="Tasks" />
           <Tab label="Timeline" />
         </Tabs>
 
@@ -283,6 +285,10 @@ export default function ProjectDetail() {
         </TabPanel>
 
         <TabPanel value={tabValue} index={3}>
+          <TaskList projectId={id!} />
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={4}>
           <Typography variant="h6" gutterBottom>
             Project Timeline
           </Typography>

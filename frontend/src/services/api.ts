@@ -75,3 +75,18 @@ export const analyticsAPI = {
   getProjectBreakdown: (projectId: string) =>
     api.get(`/analytics/project/${projectId}/breakdown`),
 };
+
+// Tasks API
+export const tasksAPI = {
+  getByProject: (projectId: string, filters?: any) =>
+    api.get(`/tasks/project/${projectId}`, { params: filters }),
+  getOne: (id: string) => api.get(`/tasks/${id}`),
+  create: (projectId: string, data: any) =>
+    api.post(`/tasks/project/${projectId}`, data),
+  update: (id: string, data: any) => api.patch(`/tasks/${id}`, data),
+  updateStatus: (id: string, status: string) =>
+    api.patch(`/tasks/${id}/status`, { status }),
+  assignTask: (id: string, assignedToId: string | null) =>
+    api.patch(`/tasks/${id}/assign`, { assignedToId }),
+  delete: (id: string) => api.delete(`/tasks/${id}`),
+};
