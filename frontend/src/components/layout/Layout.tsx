@@ -26,6 +26,7 @@ import {
   Logout as LogoutIcon,
   Store as VendorsIcon,
   Analytics as AnalyticsIcon,
+  Receipt as PurchaseOrdersIcon,
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { logout } from '../../store/slices/authSlice';
@@ -51,6 +52,7 @@ export default function Layout() {
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Projects', icon: <ProjectsIcon />, path: '/projects' },
     { text: 'Vendors', icon: <VendorsIcon />, path: '/vendors' },
+    { text: 'Purchase Orders', icon: <PurchaseOrdersIcon />, path: '/purchase-orders' },
     { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
     { text: 'Tasks', icon: <TasksIcon />, path: '/tasks' },
     { text: 'Parts', icon: <PartsIcon />, path: '/parts' },

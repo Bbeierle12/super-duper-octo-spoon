@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   LinearProgress,
-  Chip,
   Table,
   TableBody,
   TableCell,
@@ -16,8 +15,6 @@ import {
   TableRow,
 } from '@mui/material';
 import {
-  TrendingUp,
-  TrendingDown,
   CheckCircle,
   Warning,
   Error as ErrorIcon,
