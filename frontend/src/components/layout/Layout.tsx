@@ -24,6 +24,8 @@ import {
   PhotoLibrary as MediaIcon,
   Settings as SettingsIcon,
   Logout as LogoutIcon,
+  Store as VendorsIcon,
+  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { logout } from '../../store/slices/authSlice';
@@ -48,6 +50,8 @@ export default function Layout() {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
     { text: 'Projects', icon: <ProjectsIcon />, path: '/projects' },
+    { text: 'Vendors', icon: <VendorsIcon />, path: '/vendors' },
+    { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
     { text: 'Tasks', icon: <TasksIcon />, path: '/tasks' },
     { text: 'Parts', icon: <PartsIcon />, path: '/parts' },
     { text: 'Media', icon: <MediaIcon />, path: '/media' },

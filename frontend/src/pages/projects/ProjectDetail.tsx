@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { projectsAPI, categoriesAPI, analyticsAPI } from '../../services/api';
 import TaskList from '../../components/tasks/TaskList';
+import CommentsThread from '../../components/comments/CommentsThread';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -156,6 +157,7 @@ export default function ProjectDetail() {
           <Tab label="Parts" />
           <Tab label="Tasks" />
           <Tab label="Timeline" />
+          <Tab label="Comments" />
         </Tabs>
 
         <TabPanel value={tabValue} index={0}>
@@ -394,6 +396,10 @@ export default function ProjectDetail() {
               </TimelineContent>
             </TimelineItem>
           </Timeline>
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={5}>
+          <CommentsThread commentableType="project" commentableId={id!} />
         </TabPanel>
       </Paper>
     </Box>

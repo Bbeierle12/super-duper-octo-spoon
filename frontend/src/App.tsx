@@ -6,6 +6,8 @@ import Dashboard from './pages/Dashboard';
 import ProjectsList from './pages/projects/ProjectsList';
 import ProjectDetail from './pages/projects/ProjectDetail';
 import ProjectCreate from './pages/projects/ProjectCreate';
+import VendorsList from './pages/vendors/VendorsList';
+import AdvancedAnalytics from './pages/analytics/AdvancedAnalytics';
 import Layout from './components/layout/Layout';
 import PrivateRoute from './components/auth/PrivateRoute';
 
@@ -27,6 +29,8 @@ function App() {
               <Route path="/projects" element={<ProjectsList />} />
               <Route path="/projects/new" element={<ProjectCreate />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
+              <Route path="/vendors" element={<VendorsList />} />
+              <Route path="/analytics" element={<AdvancedAnalytics />} />
             </Route>
           </Route>
         </Routes>
