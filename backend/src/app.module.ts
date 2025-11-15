@@ -11,6 +11,9 @@ import { LaborModule } from './labor/labor.module';
 import { TasksModule } from './tasks/tasks.module';
 import { MediaModule } from './media/media.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { VendorsModule } from './vendors/vendors.module';
+import { ChangeOrdersModule } from './change-orders/change-orders.module';
+import { CommentsModule } from './comments/comments.module';
 import { DatabaseModule } from './database/database.module';
 import { CommonModule } from './common/common.module';
 
@@ -48,6 +51,9 @@ import { CommonModule } from './common/common.module';
     TasksModule,
     MediaModule,
     AnalyticsModule,
+    VendorsModule,
+    ChangeOrdersModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}
